@@ -159,4 +159,758 @@
             </label>
             <div class="flex items-center gap-2">
               <input id="user-digit-input" type="number" min="0" max="9" value="8" 
-                class="w-full bg-slate-900 border-2 border-slate-700 focus:border-cyan-500 rounded-lg px-3 py-2 text-2xl font-mono-code text-center font-bold text-cyan-300
+                class="w-full bg-slate-900 border-2 border-slate-700 focus:border-cyan-500 rounded-lg px-3 py-2 text-2xl font-mono-code text-center font-bold text-cyan-300 outline-none transition" />
+              <button id="btn-submit-digit" class="px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 active:scale-95 text-white font-medium text-xs rounded-lg transition whitespace-nowrap shadow-md shadow-cyan-600/30">
+                执行写入
+              </button>
+            </div>
+            <!-- BCD 8421 输入电平指示 (X3..X0) -->
+            <div class="mt-1 pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono-code">
+              <span class="text-slate-500">BCD码输入口:</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-slate-400">X3:</span><span id="bcd-x3" class="w-3.5 h-3.5 rounded-full bg-slate-800 text-[9px] flex items-center justify-center font-bold">1</span>
+                <span class="text-slate-400">X2:</span><span id="bcd-x2" class="w-3.5 h-3.5 rounded-full bg-slate-800 text-[9px] flex items-center justify-center font-bold">0</span>
+                <span class="text-slate-400">X1:</span><span id="bcd-x1" class="w-3.5 h-3.5 rounded-full bg-slate-800 text-[9px] flex items-center justify-center font-bold">0</span>
+                <span class="text-slate-400">X0:</span><span id="bcd-x0" class="w-3.5 h-3.5 rounded-full bg-slate-800 text-[9px] flex items-center justify-center font-bold">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 0 ~ 9 触摸键盘按键矩阵 (7 Cols) -->
+          <div class="sm:col-span-7 flex flex-col gap-1.5">
+            <div class="text-[11px] text-slate-400 mb-0.5">点击下方数字按键直接输入并演示：</div>
+            <div class="grid grid-cols-5 gap-1.5 font-mono-code">
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="0">0</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="1">1</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="2">2</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="3">3</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="4">4</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="5">5</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="6">6</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="7">7</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="8">8</button>
+              <button class="key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition" data-num="9">9</button>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-500 mt-1">
+              <button id="btn-random-digit" class="hover:text-cyan-400 underline transition">🎲 随机产生一个数字</button>
+              <button id="btn-toggle-dp" class="hover:text-cyan-400 underline transition">切换小数点 (dp) 亮灭</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 工业级一位段码屏实体与信号线流行动画视窗 -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl relative flex flex-col">
+        
+        <!-- 面板顶标与颜色配置 -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/80"></span>
+            <span class="text-xs font-semibold text-slate-200 tracking-wider">PLC 输出端子 (Y0..Y7) 与 一位数码管接线拓扑</span>
+          </div>
+
+          <!-- 发光色温切换 -->
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] text-slate-400">LED发光色:</span>
+            <div class="flex gap-1.5">
+              <button data-color="red" class="color-btn w-4 h-4 rounded-full bg-rose-500 ring-2 ring-white ring-offset-2 ring-offset-slate-900" title="经典红光"></button>
+              <button data-color="cyan" class="color-btn w-4 h-4 rounded-full bg-cyan-400 opacity-60 hover:opacity-100" title="青蓝光"></button>
+              <button data-color="green" class="color-btn w-4 h-4 rounded-full bg-emerald-400 opacity-60 hover:opacity-100" title="翠绿光"></button>
+              <button data-color="amber" class="color-btn w-4 h-4 rounded-full bg-amber-400 opacity-60 hover:opacity-100" title="暖黄光"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 动画流向画板 (PLC 输出端子排 -> 连线粒子 -> 一位段码屏) -->
+        <div class="relative bg-gradient-to-b from-black via-slate-950 to-slate-900 border-2 border-slate-700/80 rounded-xl p-4 shadow-inner flex flex-col items-center justify-center min-h-[380px] overflow-hidden select-none">
+          
+          <div class="absolute top-2.5 left-3 text-[10px] text-slate-500 font-mono-code">PLC OUTPUT TERMINALS: Y0..Y7 (K2Y0)</div>
+          <div id="flow-pipeline-status" class="absolute top-2.5 right-3 text-[10px] text-emerald-400 font-mono-code animate-pulse">● 信号传输链路畅通</div>
+
+          <div class="w-full flex flex-col md:flex-row items-center justify-between gap-4 my-2 z-10">
+            
+            <!-- 左侧：PLC 输出端子卡排 (Y0 ~ Y7) -->
+            <div class="w-full md:w-44 bg-slate-900/90 border border-slate-800 rounded-xl p-3 shadow-lg flex flex-col gap-1.5">
+              <div class="flex items-center justify-between text-[11px] text-cyan-400 font-bold border-b border-slate-800 pb-1">
+                <span>PLC 端子 (Y)</span>
+                <span>段选引脚</span>
+              </div>
+              <div id="terminals-list" class="flex flex-col gap-1 font-mono-code text-xs">
+                <!-- 由 JS 渲染 8 个输出端子 -->
+              </div>
+            </div>
+
+            <!-- 中间 & 右侧：SVG 连线动画与一位数码管实体 -->
+            <div class="relative flex-1 flex items-center justify-center w-full">
+              <svg id="svg-wiring" class="w-full max-w-[460px] h-[310px]" viewBox="0 0 460 310">
+                <!-- 8 条引脚到数码管内部笔段的连线轨迹 (左侧X=10对应端子高度) -->
+                <!-- a 段 (连接 Y0 到 顶部 a) -->
+                <path id="cable-a" class="signal-cable" d="M 10,25 C 90,25 140,25 210,35" />
+                <!-- b 段 (连接 Y1 到 右上 b) -->
+                <path id="cable-b" class="signal-cable" d="M 10,60 C 90,60 180,60 268,75" />
+                <!-- c 段 (连接 Y2 到 右下 c) -->
+                <path id="cable-c" class="signal-cable" d="M 10,95 C 100,95 210,130 260,195" />
+                <!-- d 段 (连接 Y3 到 底部 d) -->
+                <path id="cable-d" class="signal-cable" d="M 10,130 C 110,130 150,265 210,270" />
+                <!-- e 段 (连接 Y4 到 左下 e) -->
+                <path id="cable-e" class="signal-cable" d="M 10,165 C 120,165 140,220 180,210" />
+                <!-- f 段 (连接 Y5 到 左上 f) -->
+                <path id="cable-f" class="signal-cable" d="M 10,200 C 90,200 130,95 190,95" />
+                <!-- g 段 (连接 Y6 到 中部 g) -->
+                <path id="cable-g" class="signal-cable" d="M 10,235 C 110,235 145,155 205,153" />
+                <!-- dp 点 (连接 Y7 到 右下 dp) -->
+                <path id="cable-dp" class="signal-cable" d="M 10,270 C 130,270 200,275 285,270" />
+
+                <!-- 数码管几何框体 (带工控 6 度倾斜设计) -->
+                <g transform="translate(160, 10)">
+                  <rect x="0" y="5" width="165" height="280" rx="14" fill="#0b0f19" stroke="#253248" stroke-width="2" />
+                  
+                  <text x="82" y="26" fill="#475569" font-size="8" text-anchor="middle" font-family="'JetBrains Mono', monospace">MODEL: SEG-1D-08</text>
+                  <text id="label-polarity-display" x="82" y="275" fill="#475569" font-size="8" text-anchor="middle" font-family="'JetBrains Mono', monospace">COMMON CATHODE</text>
+
+                  <!-- 倾斜角笔段结构 -->
+                  <g transform="skewX(-6) translate(28, 30)">
+                    <!-- a段 -->
+                    <polygon id="seg-shape-a" class="segment-shape" points="20,10 26,4 84,4 90,10 82,18 28,18" />
+                    <text x="55" y="14" fill="#64748b" font-size="8" text-anchor="middle" font-weight="bold">a</text>
+
+                    <!-- b段 -->
+                    <polygon id="seg-shape-b" class="segment-shape" points="92,12 98,18 92,90 84,82 88,20" />
+                    <text x="92" y="52" fill="#64748b" font-size="8" text-anchor="middle" font-weight="bold">b</text>
+
+                    <!-- c段 -->
+                    <polygon id="seg-shape-c" class="segment-shape" points="88,106 96,112 90,184 82,176 84,100" />
+                    <text x="89" y="146" fill="#64748b" font-size="8" text-anchor="middle" font-weight="bold">c</text>
+
+                    <!-- d段 -->
+                    <polygon id="seg-shape-d" class="segment-shape" points="20,186 28,178 82,178 90,186 84,192 26,192" />
+                    <text x="55" y="188" fill="#64748b" font-size="8" text-anchor="middle" font-weight="bold">d</text>
+
+                    <!-- e段 -->
+                    <polygon id="seg-shape-e" class="segment-shape" points="18,106 24,100 26,176 18,184 12,112" />
+                    <text x="21" y="146" fill="#64748b" font-size="8" text-anchor="middle" font-weight="bold">e</text>
+
+                    <!-- f段 -->
+                    <polygon id="seg-shape-f" class="segment-shape" points="20,12 26,20 24,82 18,90 12,18" />
+                    <text x="18" y="52" fill="#64748b" font-size="8" text-anchor="middle" font-weight="bold">f</text>
+
+                    <!-- g段 -->
+                    <polygon id="seg-shape-g" class="segment-shape" points="26,98 32,92 78,92 84,98 78,104 32,104" />
+                    <text x="55" y="101" fill="#64748b" font-size="8" text-anchor="middle" font-weight="bold">g</text>
+
+                    <!-- dp段 -->
+                    <circle id="seg-shape-dp" class="segment-shape" cx="106" cy="186" r="6" />
+                    <text x="106" y="174" fill="#64748b" font-size="7" text-anchor="middle">dp</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+          </div>
+
+          <!-- 段码总线实时数值与动画反馈条 -->
+          <div class="w-full bg-slate-950/90 rounded-lg p-2.5 border border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs font-mono-code">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400">当前译码总线输出:</span>
+              <span id="bus-hex-val" class="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-bold">0x7F</span>
+              <span id="bus-bin-val" class="text-slate-400">01111111B</span>
+            </div>
+            <div id="animation-stage-tip" class="text-emerald-400 text-[11px]">
+              ✔ 导线高亮流动表示当前端子正输出高电平驱动对应笔段
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 右侧区域：PLC 寄存器、梯形图 SEGD 执行流与真值表 (5 Cols) -->
+    <div class="lg:col-span-5 flex flex-col gap-5">
+      
+      <!-- 核心寄存器实时监控面板 -->
+      <div class="grid grid-cols-3 gap-3">
+        <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between shadow-lg">
+          <span class="text-[11px] text-slate-400">输入数字 (D0)</span>
+          <span id="reg-d0-val" class="text-2xl font-bold font-mono-code text-cyan-400 mt-0.5">8</span>
+          <span class="text-[10px] text-slate-500 font-mono-code">BCD Data: 0~9</span>
+        </div>
+        <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between shadow-lg">
+          <span class="text-[11px] text-slate-400">段码输出 (K2Y0)</span>
+          <span id="reg-k2y0-val" class="text-2xl font-bold font-mono-code text-rose-400 mt-0.5">0x7F</span>
+          <span class="text-[10px] text-slate-500 font-mono-code">8-Bit Segment</span>
+        </div>
+        <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl flex flex-col justify-between shadow-lg">
+          <span class="text-[11px] text-slate-400">PLC 扫描周期</span>
+          <span id="plc-scan-time" class="text-2xl font-bold font-mono-code text-emerald-400 mt-0.5">0.8ms</span>
+          <span class="text-[10px] text-slate-500 font-mono-code">SCAN OK</span>
+        </div>
+      </div>
+
+      <!-- 选项卡系统：梯形图动态执行 / 段码字模真值表 / PLC 译码原理 -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col flex-1">
+        
+        <!-- Tab 头部导航 -->
+        <div class="flex items-center border-b border-slate-800 pb-3 mb-4 gap-2 text-xs">
+          <button id="tab-nav-ladder" class="px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-medium">PLC 梯形图 (SEGD执行动画)</button>
+          <button id="tab-nav-table" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200">0~9 段码真值表</button>
+          <button id="tab-nav-info" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200">原理剖析</button>
+        </div>
+
+        <!-- 选项卡 1：PLC 梯形图动态电流流向 -->
+        <div id="tab-content-ladder" class="flex flex-col flex-1">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span>三菱 FX3U 梯形图：输入采样与 SEGD 译码</span>
+            <span class="text-emerald-400 text-[11px] flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> 绿色流线表示指令执行瞬态
+            </span>
+          </div>
+
+          <div class="bg-slate-950 rounded-xl p-3 border border-slate-800/90 overflow-x-auto flex-1 flex flex-col justify-center">
+            <svg class="w-full min-w-[320px] h-[280px] text-xs font-mono-code select-none" viewBox="0 0 360 280">
+              <!-- 左母线与右母线 -->
+              <line x1="20" y1="10" x2="20" y2="270" stroke="#0284c7" stroke-width="2.5" />
+              <line x1="340" y1="10" x2="340" y2="270" stroke="#475569" stroke-width="2.5" />
+
+              <!-- Rung 1: 输入触发采样指令 [MOV K... D0] -->
+              <g id="ladder-row-input">
+                <line id="ladder-wire-r1a" x1="20" y1="50" x2="60" y2="50" stroke="#475569" stroke-width="2" />
+                <!-- 触点 X0 (输入写入脉冲) -->
+                <line id="ladder-contact-x-1" x1="60" y1="40" x2="60" y2="60" stroke="#94a3b8" stroke-width="2" />
+                <line id="ladder-contact-x-2" x1="72" y1="40" x2="72" y2="60" stroke="#94a3b8" stroke-width="2" />
+                <text x="50" y="32" fill="#94a3b8" font-size="10">X0 (输入触发)</text>
+
+                <line id="ladder-wire-r1b" x1="72" y1="50" x2="190" y2="50" stroke="#475569" stroke-width="2" />
+                <!-- 指令框 [MOV K(n) D0] -->
+                <rect id="ladder-box-mov" x="190" y="35" width="115" height="30" rx="3" fill="#1e293b" stroke="#64748b" stroke-width="1.5" />
+                <text id="ladder-text-mov" x="198" y="55" fill="#e2e8f0" font-size="11">MOV K8 D0</text>
+                <line id="ladder-wire-r1c" x1="305" y1="50" x2="340" y2="50" stroke="#475569" stroke-width="2" />
+              </g>
+
+              <!-- Rung 2: 核心 SEGD 7段译码指令 [SEGD D0 K2Y0] -->
+              <g id="ladder-row-segd">
+                <line id="ladder-wire-r2a" x1="20" y1="140" x2="60" y2="140" stroke="#10b981" stroke-width="2" />
+                <!-- 常开运行监控触点 M8000 -->
+                <line id="ladder-contact-m-1" x1="60" y1="130" x2="60" y2="150" stroke="#10b981" stroke-width="2" />
+                <line id="ladder-contact-m-2" x1="72" y1="130" x2="72" y2="150" stroke="#10b981" stroke-width="2" />
+                <text x="50" y="122" fill="#10b981" font-size="10">M8000 (运行触点)</text>
+                <line id="ladder-wire-r2b" x1="72" y1="140" x2="180" y2="140" stroke="#10b981" stroke-width="2" />
+
+                <!-- SEGD 译码执行框 -->
+                <rect id="ladder-box-segd" x="180" y="123" width="135" height="34" rx="4" fill="#0f2937" stroke="#06b6d4" stroke-width="1.8" />
+                <text x="190" y="145" fill="#38bdf8" font-weight="bold" font-size="11">SEGD D0 K2Y0</text>
+                <line id="ladder-wire-r2c" x1="315" y1="140" x2="340" y2="140" stroke="#10b981" stroke-width="2" />
+              </g>
+
+              <!-- Rung 3: 点亮输出刷新线圈 (K2Y0 8位并行输出) -->
+              <g id="ladder-row-out">
+                <line id="ladder-wire-r3a" x1="20" y1="220" x2="190" y2="220" stroke="#475569" stroke-width="2" />
+                <!-- 输出线圈 (Y0~Y7) -->
+                <path id="ladder-coil-y" d="M 190,210 Q 200,220 190,230 M 230,210 Q 220,220 230,230" stroke="#64748b" stroke-width="2" fill="none" />
+                <text x="198" y="224" fill="#94a3b8" font-size="10">K2Y0</text>
+                <line id="ladder-wire-r3b" x1="230" y1="220" x2="340" y2="220" stroke="#475569" stroke-width="2" />
+              </g>
+
+              <text x="24" y="260" fill="#64748b" font-size="9.5">* 用户每次输入新数字，梯形图立即触发 MOV 传送到 D0 并由 SEGD 瞬时译码刷新输出</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- 选项卡 2：段码真值表 (0 ~ 9 联动与点击写入) -->
+        <div id="tab-content-table" class="hidden flex-col flex-1">
+          <div class="text-xs text-slate-400 mb-2 flex items-center justify-between">
+            <span>点击任意行直接输入该数字：</span>
+            <span class="text-cyan-400 text-[11px]">共阴标准码 (1=亮, 0=灭)</span>
+          </div>
+
+          <div class="overflow-x-auto flex-1 max-h-[280px] border border-slate-800 rounded-xl">
+            <table class="w-full text-xs font-mono-code text-center">
+              <thead class="bg-slate-950 text-slate-400 sticky top-0 border-b border-slate-800">
+                <tr>
+                  <th class="py-1.5 px-2">数字</th>
+                  <th class="py-1.5 px-1">dp(Y7)</th>
+                  <th class="py-1.5 px-1">g(Y6)</th>
+                  <th class="py-1.5 px-1">f(Y5)</th>
+                  <th class="py-1.5 px-1">e(Y4)</th>
+                  <th class="py-1.5 px-1">d(Y3)</th>
+                  <th class="py-1.5 px-1">c(Y2)</th>
+                  <th class="py-1.5 px-1">b(Y1)</th>
+                  <th class="py-1.5 px-1">a(Y0)</th>
+                  <th class="py-1.5 px-2 text-rose-400">HEX码</th>
+                </tr>
+              </thead>
+              <tbody id="table-truth-rows" class="divide-y divide-slate-800/60 bg-slate-900/60">
+                <!-- 由 JS 填充 0~9 行 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 选项卡 3：原理说明 -->
+        <div id="tab-content-info" class="hidden flex-col flex-1 text-xs text-slate-300 leading-relaxed gap-3">
+          <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+            <h4 class="font-bold text-cyan-400 mb-1">1. 输入到输出的执行过程</h4>
+            <p class="text-slate-400">
+              当你在界面上输入一个数字（如 <strong>5</strong>）时：
+            </p>
+            <ol class="list-decimal list-inside text-slate-400 space-y-1 mt-1">
+              <li><strong>输入采样：</strong> PLC 输入映像寄存器（如 X0~X3）捕获数字的 BCD 二进制编码（0101B）；</li>
+              <li><strong>CPU 译码运算：</strong> 执行 <code class="text-cyan-300 font-mono-code">SEGD D0 K2Y0</code>，内部固化字模表将 5 查表解析为段选字节 <code class="text-rose-400 font-mono-code">0x6D</code>（即二进制 01101101B）；</li>
+              <li><strong>输出驱动刷新：</strong> Y0(a)、Y2(c)、Y3(d)、Y5(f)、Y6(g) 端子翻转为高电平；</li>
+              <li><strong>数码管点亮：</strong> 对应笔段导通点亮，肉眼看到一位数字清晰呈现。</li>
+            </ol>
+          </div>
+
+          <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800">
+            <h4 class="font-bold text-emerald-400 mb-1">2. 慢动作动画的价值</h4>
+            <p class="text-slate-400">
+              在实际工业现场，PLC 扫描与电平变化仅需几毫秒。本系统提供的“慢动作过程剖析”将信号传输与查表过程延展为连续波动的光束动画，清晰解构工业 PLC 内部数据流转细节。
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- 底部状态说明条 -->
+  <footer class="max-w-7xl mx-auto w-full px-4 lg:px-6 pb-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        <span>PLC 动画仿真引擎状态：<strong id="footer-engine-state" class="text-slate-200">等待用户输入数字中...</strong></span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-500 font-mono-code">
+        <span>INSTRUCTION: SEGD [S] [D]</span>
+        <span>CHANNELS: 8-BIT OUTPUT</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 0~9 标准 7 段码字模定义 (bit 顺序: Y7=dp, Y6=g, Y5=f, Y4=e, Y3=d, Y2=c, Y1=b, Y0=a)
+    const DIGIT_FONT = [
+      { num: 0, a:1, b:1, c:1, d:1, e:1, f:1, g:0, dp:0, hex: '0x3F', bin: '00111111' },
+      { num: 1, a:0, b:1, c:1, d:0, e:0, f:0, g:0, dp:0, hex: '0x06', bin: '00000110' },
+      { num: 2, a:1, b:1, c:0, d:1, e:1, f:0, g:1, dp:0, hex: '0x5B', bin: '01011011' },
+      { num: 3, a:1, b:1, c:1, d:1, e:0, f:0, g:1, dp:0, hex: '0x4F', bin: '01001111' },
+      { num: 4, a:0, b:1, c:1, d:0, e:0, f:1, g:1, dp:0, hex: '0x66', bin: '01100110' },
+      { num: 5, a:1, b:0, c:1, d:1, e:0, f:1, g:1, dp:0, hex: '0x6D', bin: '01101101' },
+      { num: 6, a:1, b:0, c:1, d:1, e:1, f:1, g:1, dp:0, hex: '0x7D', bin: '01111101' },
+      { num: 7, a:1, b:1, c:1, d:0, e:0, f:0, g:0, dp:0, hex: '0x07', bin: '00000111' },
+      { num: 8, a:1, b:1, c:1, d:1, e:1, f:1, g:1, dp:0, hex: '0x7F', bin: '01111111' },
+      { num: 9, a:1, b:1, c:1, d:1, e:0, f:1, g:1, dp:0, hex: '0x6F', bin: '01101111' }
+    ];
+
+    const SEG_KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'dp'];
+
+    // 运行状态
+    let currentNumber = 8;        // 当前数字 0~9
+    let isDpForced = false;       // 是否手动强制点亮小数点
+    let polarity = 'cc';          // 'cc' (共阴) 或 'ca' (共阳)
+    let activeColor = 'red';      // 'red', 'cyan', 'green', 'amber'
+    let animationSpeedMode = 'slowmo'; // 'realtime' 或 'slowmo'
+    let isAnimating = false;      // 动画执行互斥锁
+
+    const userDigitInput = document.getElementById('user-digit-input');
+    const btnSubmitDigit = document.getElementById('btn-submit-digit');
+    const inputStatusIndicator = document.getElementById('input-status-indicator');
+    const terminalsList = document.getElementById('terminals-list');
+    const tableTruthRows = document.getElementById('table-truth-rows');
+    const regD0Val = document.getElementById('reg-d0-val');
+    const regK2Y0Val = document.getElementById('reg-k2y0-val');
+    const busHexVal = document.getElementById('bus-hex-val');
+    const busBinVal = document.getElementById('bus-bin-val');
+    const navDisplayPreview = document.getElementById('nav-display-preview');
+    const animationStageTip = document.getElementById('animation-stage-tip');
+    const footerEngineState = document.getElementById('footer-engine-state');
+    const labelPolarityDisplay = document.getElementById('label-polarity-display');
+    const ladderTextMov = document.getElementById('ladder-text-mov');
+
+    function initTerminals() {
+      terminalsList.innerHTML = '';
+      SEG_KEYS.forEach((key, index) => {
+        const item = document.createElement('div');
+        item.id = `term-pin-${key}`;
+        item.className = 'flex items-center justify-between p-1 rounded bg-slate-950/70 border border-slate-800/80 transition-all';
+        item.innerHTML = `
+          <div class="flex items-center gap-1.5">
+            <span class="term-led w-2 h-2 rounded-full bg-slate-700 transition"></span>
+            <span class="text-slate-400">Y${index}</span>
+          </div>
+          <span class="text-slate-300 font-semibold">${key.toUpperCase()}</span>
+        `;
+        terminalsList.appendChild(item);
+      });
+    }
+
+    function initTruthTable() {
+      tableTruthRows.innerHTML = '';
+      DIGIT_FONT.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.id = `truth-row-${row.num}`;
+        tr.className = 'cursor-pointer hover:bg-slate-800 transition';
+        tr.title = `点击将系统输入设为数字 ${row.num}`;
+        tr.innerHTML = `
+          <td class="py-1.5 px-2 font-bold text-white">${row.num}</td>
+          <td class="py-1.5 px-1 ${row.dp ? 'text-emerald-400 font-bold' : 'text-slate-600'}">${row.dp}</td>
+          <td class="py-1.5 px-1 ${row.g ? 'text-emerald-400 font-bold' : 'text-slate-600'}">${row.g}</td>
+          <td class="py-1.5 px-1 ${row.f ? 'text-emerald-400 font-bold' : 'text-slate-600'}">${row.f}</td>
+          <td class="py-1.5 px-1 ${row.e ? 'text-emerald-400 font-bold' : 'text-slate-600'}">${row.e}</td>
+          <td class="py-1.5 px-1 ${row.d ? 'text-emerald-400 font-bold' : 'text-slate-600'}">${row.d}</td>
+          <td class="py-1.5 px-1 ${row.c ? 'text-emerald-400 font-bold' : 'text-slate-600'}">${row.c}</td>
+          <td class="py-1.5 px-1 ${row.b ? 'text-emerald-400 font-bold' : 'text-slate-600'}">${row.b}</td>
+          <td class="py-1.5 px-1 ${row.a ? 'text-emerald-400 font-bold' : 'text-slate-600'}">${row.a}</td>
+          <td class="py-1.5 px-2 text-rose-400 font-semibold">${row.hex}</td>
+        `;
+        tr.addEventListener('click', () => {
+          handleNewInput(row.num);
+        });
+        tableTruthRows.appendChild(tr);
+      });
+    }
+
+    function updateBcdIndicators(num) {
+      const b3 = (num >> 3) & 1;
+      const b2 = (num >> 2) & 1;
+      const b1 = (num >> 1) & 1;
+      const b0 = num & 1;
+
+      const setBadge = (id, val) => {
+        const el = document.getElementById(id);
+        el.textContent = val;
+        if (val === 1) {
+          el.className = 'w-3.5 h-3.5 rounded-full bg-cyan-500 text-slate-950 text-[9px] flex items-center justify-center font-bold shadow-sm shadow-cyan-400';
+        } else {
+          el.className = 'w-3.5 h-3.5 rounded-full bg-slate-800 text-slate-500 text-[9px] flex items-center justify-center font-bold';
+        }
+      };
+
+      setBadge('bcd-x3', b3);
+      setBadge('bcd-x2', b2);
+      setBadge('bcd-x1', b1);
+      setBadge('bcd-x0', b0);
+    }
+
+    function renderOutputs(num, applyImmediate = false) {
+      const font = DIGIT_FONT[num];
+      const dpValue = isDpForced ? 1 : font.dp;
+
+      // 段选状态与引脚更新
+      SEG_KEYS.forEach(key => {
+        const shape = document.getElementById(`seg-shape-${key}`);
+        const cable = document.getElementById(`cable-${key}`);
+        const term = document.getElementById(`term-pin-${key}`);
+        const led = term ? term.querySelector('.term-led') : null;
+
+        const bitVal = key === 'dp' ? dpValue : font[key];
+        const isSegmentLit = polarity === 'cc' ? bitVal === 1 : bitVal === 0;
+
+        // 设置笔段发光
+        shape.classList.remove('lit-red', 'lit-cyan', 'lit-green', 'lit-amber');
+        if (isSegmentLit) {
+          shape.classList.add(`lit-${activeColor}`);
+        }
+
+        // 设置连线电平
+        const colorHex = activeColor === 'red' ? '#ff2a5f' : (activeColor === 'cyan' ? '#00f0ff' : (activeColor === 'green' ? '#10e080' : '#ffaa00'));
+
+        if (bitVal === 1) {
+          cable.classList.add('energized');
+          cable.style.stroke = colorHex;
+          if (led) {
+            led.className = 'term-led w-2 h-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400';
+          }
+          if (term) {
+            term.classList.add('border-emerald-700/80', 'bg-emerald-950/20');
+          }
+        } else {
+          cable.classList.remove('energized');
+          cable.style.stroke = '#1e293b';
+          if (led) {
+            led.className = 'term-led w-2 h-2 rounded-full bg-slate-700';
+          }
+          if (term) {
+            term.classList.remove('border-emerald-700/80', 'bg-emerald-950/20');
+          }
+        }
+      });
+
+      // 计算最终 HEX
+      let hexNum = parseInt(font.hex, 16);
+      if (isDpForced) hexNum = hexNum | 0x80;
+      const hexStr = '0x' + hexNum.toString(16).toUpperCase().padStart(2, '0');
+      const binStr = hexNum.toString(2).padStart(8, '0');
+
+      regD0Val.textContent = num;
+      regK2Y0Val.textContent = hexStr;
+      busHexVal.textContent = hexStr;
+      busBinVal.textContent = `${binStr}B`;
+      navDisplayPreview.textContent = num;
+      userDigitInput.value = num;
+      ladderTextMov.textContent = `MOV K${num} D0`;
+
+      // 真值表高亮
+      DIGIT_FONT.forEach(item => {
+        const rowEl = document.getElementById(`truth-row-${item.num}`);
+        if (rowEl) {
+          if (item.num === num) {
+            rowEl.className = 'bg-cyan-950/70 border-l-4 border-cyan-400 text-white font-bold transition';
+          } else {
+            rowEl.className = 'hover:bg-slate-800 transition text-slate-300';
+          }
+        }
+      });
+
+      // 按键高亮
+      document.querySelectorAll('.key-pad-btn').forEach(btn => {
+        const n = parseInt(btn.getAttribute('data-num'), 10);
+        if (n === num) {
+          btn.className = 'key-pad-btn p-2 rounded-lg bg-cyan-600 text-white border border-cyan-400 text-sm font-bold shadow-md shadow-cyan-600/30';
+        } else {
+          btn.className = 'key-pad-btn p-2 rounded-lg bg-slate-800 hover:bg-cyan-600 hover:text-white border border-slate-700 text-sm font-bold text-slate-200 transition';
+        }
+      });
+
+      updateBcdIndicators(num);
+    }
+
+    function triggerPipelineAnimation(newNum) {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      currentNumber = newNum;
+      inputStatusIndicator.textContent = `写入数字 ${newNum}...`;
+      inputStatusIndicator.className = 'text-amber-400 font-mono-code font-bold animate-pulse';
+
+      if (animationSpeedMode === 'realtime') {
+        // 极速模式：瞬态刷新
+        renderOutputs(newNum);
+        flashLadder();
+        finishAnimation();
+        return;
+      }
+
+      // 慢动作模式：4阶段分解动画
+      // 阶段 1：输入采样
+      animationStageTip.textContent = `[步骤1/4] 输入采样：捕获数字 ${newNum} 并写入 BCD 寄存器`;
+      footerEngineState.textContent = `正在采样数字 ${newNum} 到 D0 寄存器...`;
+      updateBcdIndicators(newNum);
+
+      const contact1 = document.getElementById('ladder-contact-x-1');
+      const contact2 = document.getElementById('ladder-contact-x-2');
+      const wire1b = document.getElementById('ladder-wire-r1b');
+      const boxMov = document.getElementById('ladder-box-mov');
+
+      contact1.classList.add('ladder-flow-pulse');
+      contact2.classList.add('ladder-flow-pulse');
+      wire1b.classList.add('ladder-flow-pulse');
+      boxMov.classList.add('ladder-block-pulse');
+
+      setTimeout(() => {
+        // 阶段 2：SEGD 译码执行
+        animationStageTip.textContent = `[步骤2/4] PLC 梯形图执行：SEGD 指令执行查表译码`;
+        footerEngineState.textContent = `CPU SEGD 指令将 D0=${newNum} 译码为 7段码字模...`;
+        regD0Val.textContent = newNum;
+        ladderTextMov.textContent = `MOV K${newNum} D0`;
+
+        const boxSegd = document.getElementById('ladder-box-segd');
+        boxSegd.classList.add('ladder-block-pulse');
+
+        setTimeout(() => {
+          // 阶段 3：Y0..Y7 总线粒子流动
+          animationStageTip.textContent = `[步骤3/4] 输出刷新：Y0~Y7 端子向段码屏发射驱动信号`;
+          footerEngineState.textContent = `输出总线电平翻转，电子流正沿导线奔向各笔段...`;
+          renderOutputs(newNum);
+
+          const coilY = document.getElementById('ladder-coil-y');
+          coilY.classList.add('ladder-flow-pulse');
+
+          setTimeout(() => {
+            // 阶段 4：段码屏笔段发光辉光展开
+            animationStageTip.textContent = `[步骤4/4] 显示完成：一位段码屏成功输出数字 ${newNum}`;
+            footerEngineState.textContent = `数码管完成输出，数字 ${newNum} 稳态保持点亮中`;
+
+            // 恢复梯形图样式
+            contact1.classList.remove('ladder-flow-pulse');
+            contact2.classList.remove('ladder-flow-pulse');
+            wire1b.classList.remove('ladder-flow-pulse');
+            boxMov.classList.remove('ladder-block-pulse');
+            boxSegd.classList.remove('ladder-block-pulse');
+            coilY.classList.remove('ladder-flow-pulse');
+
+            finishAnimation();
+          }, 350);
+
+        }, 300);
+
+      }, 250);
+    }
+
+    function flashLadder() {
+      const boxSegd = document.getElementById('ladder-box-segd');
+      const boxMov = document.getElementById('ladder-box-mov');
+      boxSegd.classList.add('ladder-block-pulse');
+      boxMov.classList.add('ladder-block-pulse');
+      setTimeout(() => {
+        boxSegd.classList.remove('ladder-block-pulse');
+        boxMov.classList.remove('ladder-block-pulse');
+      }, 150);
+    }
+
+    function finishAnimation() {
+      isAnimating = false;
+      inputStatusIndicator.textContent = `输出完毕 (${currentNumber})`;
+      inputStatusIndicator.className = 'text-emerald-400 font-mono-code font-bold';
+      setTimeout(() => {
+        if (!isAnimating) {
+          inputStatusIndicator.textContent = '就绪 (Ready)';
+          inputStatusIndicator.className = 'text-cyan-400 font-mono-code font-bold';
+        }
+      }, 1200);
+    }
+
+    function handleNewInput(rawVal) {
+      let num = parseInt(rawVal, 10);
+      if (isNaN(num)) return;
+      num = Math.max(0, Math.min(9, num));
+      triggerPipelineAnimation(num);
+    }
+
+    // 提交按钮
+    btnSubmitDigit.addEventListener('click', () => {
+      handleNewInput(userDigitInput.value);
+    });
+
+    // 输入框回车
+    userDigitInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        handleNewInput(userDigitInput.value);
+      }
+    });
+
+    // 0~9 按键矩阵点击
+    document.querySelectorAll('.key-pad-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-num');
+        handleNewInput(val);
+      });
+    });
+
+    // 全局键盘监听 (用户直接敲击 0~9 键)
+    window.addEventListener('keydown', (e) => {
+      if (e.target === userDigitInput) return; // 输入框内不重复处理
+      if (e.key >= '0' && e.key <= '9') {
+        handleNewInput(e.key);
+      }
+    });
+
+    // 随机数
+    document.getElementById('btn-random-digit').addEventListener('click', () => {
+      const rand = Math.floor(Math.random() * 10);
+      handleNewInput(rand);
+    });
+
+    // 小数点切换
+    document.getElementById('btn-toggle-dp').addEventListener('click', () => {
+      isDpForced = !isDpForced;
+      renderOutputs(currentNumber);
+    });
+
+    // 动画模式切换
+    const btnSpeedRealtime = document.getElementById('btn-speed-realtime');
+    const btnSpeedSlowmo = document.getElementById('btn-speed-slowmo');
+
+    btnSpeedRealtime.addEventListener('click', () => {
+      animationSpeedMode = 'realtime';
+      btnSpeedRealtime.className = 'px-2.5 py-1 rounded bg-cyan-600 text-white text-[11px] font-medium transition';
+      btnSpeedSlowmo.className = 'px-2.5 py-1 rounded text-slate-300 hover:text-white text-[11px] transition';
+    });
+
+    btnSpeedSlowmo.addEventListener('click', () => {
+      animationSpeedMode = 'slowmo';
+      btnSpeedSlowmo.className = 'px-2.5 py-1 rounded bg-cyan-600 text-white text-[11px] font-medium transition flex items-center gap-1';
+      btnSpeedRealtime.className = 'px-2.5 py-1 rounded text-slate-300 hover:text-white text-[11px] transition';
+    });
+
+    // 极性切换
+    const btnPolCC = document.getElementById('btn-pol-cc');
+    const btnPolCA = document.getElementById('btn-pol-ca');
+
+    btnPolCC.addEventListener('click', () => {
+      polarity = 'cc';
+      btnPolCC.className = 'px-2 py-1 rounded bg-slate-800 text-white text-[11px] font-medium border border-slate-700';
+      btnPolCA.className = 'px-2 py-1 rounded text-slate-400 hover:text-slate-200 text-[11px]';
+      labelPolarityDisplay.textContent = 'COMMON CATHODE';
+      renderOutputs(currentNumber);
+    });
+
+    btnPolCA.addEventListener('click', () => {
+      polarity = 'ca';
+      btnPolCA.className = 'px-2 py-1 rounded bg-slate-800 text-white text-[11px] font-medium border border-slate-700';
+      btnPolCC.className = 'px-2 py-1 rounded text-slate-400 hover:text-slate-200 text-[11px]';
+      labelPolarityDisplay.textContent = 'COMMON ANODE';
+      renderOutputs(currentNumber);
+    });
+
+    // 色温切换
+    document.querySelectorAll('.color-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.color-btn').forEach(b => {
+          b.classList.remove('ring-2', 'ring-white', 'ring-offset-2', 'ring-offset-slate-900');
+          b.classList.add('opacity-60');
+        });
+        activeColor = btn.getAttribute('data-color');
+        btn.classList.add('ring-2', 'ring-white', 'ring-offset-2', 'ring-offset-slate-900');
+        btn.classList.remove('opacity-60');
+        renderOutputs(currentNumber);
+      });
+    });
+
+    // 选项卡切换
+    const tabNavLadder = document.getElementById('tab-nav-ladder');
+    const tabNavTable = document.getElementById('tab-nav-table');
+    const tabNavInfo = document.getElementById('tab-nav-info');
+    const tabContentLadder = document.getElementById('tab-content-ladder');
+    const tabContentTable = document.getElementById('tab-content-table');
+    const tabContentInfo = document.getElementById('tab-content-info');
+
+    function switchTab(target) {
+      [tabNavLadder, tabNavTable, tabNavInfo].forEach(b => {
+        b.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200';
+      });
+      [tabContentLadder, tabContentTable, tabContentInfo].forEach(p => {
+        p.classList.add('hidden');
+        p.classList.remove('flex');
+      });
+
+      if (target === 'ladder') {
+        tabNavLadder.className = 'px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-medium';
+        tabContentLadder.classList.remove('hidden');
+        tabContentLadder.classList.add('flex');
+      } else if (target === 'table') {
+        tabNavTable.className = 'px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-medium';
+        tabContentTable.classList.remove('hidden');
+        tabContentTable.classList.add('flex');
+      } else {
+        tabNavInfo.className = 'px-3 py-1.5 rounded-lg bg-cyan-600 text-white font-medium';
+        tabContentInfo.classList.remove('hidden');
+        tabContentInfo.classList.add('flex');
+      }
+    }
+
+    tabNavLadder.addEventListener('click', () => switchTab('ladder'));
+    tabNavTable.addEventListener('click', () => switchTab('table'));
+    tabNavInfo.addEventListener('click', () => switchTab('info'));
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initTerminals();
+      initTruthTable();
+      renderOutputs(8);
+    });
+  </script>
+</body>
+</html>
