@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一位数字段码屏 PLC 输入与输出全流程动画控制系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background-color: #060911;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .font-digital {
+      font-family: 'Chakra Petch', monospace;
+    }
+
+    /* 七段数码管笔段点亮与辉光渐变动画 */
+    .segment-shape {
+      transition: fill 0.15s ease, filter 0.15s ease;
+      fill: #111724;
+      filter: drop-shadow(0 0 0px transparent);
+    }
+    .segment-shape.lit-red {
+      fill: #ff2a5f !important;
+      filter: drop-shadow(0 0 8px rgba(255, 42, 95, 0.95)) drop-shadow(0 0 22px rgba(255, 42, 95, 0.6));
+    }
+    .segment-shape.lit-cyan {
+      fill: #00f0ff !important;
+      filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.95)) drop-shadow(0 0 22px rgba(0, 240, 255, 0.6));
+    }
+    .segment-shape.lit-green {
+      fill: #10e080 !important;
+      filter: drop-shadow(0 0 8px rgba(16, 224, 128, 0.95)) drop-shadow(0 0 22px rgba(16, 224, 128, 0.6));
+    }
+    .segment-shape.lit-amber {
+      fill: #ffaa00 !important;
+      filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.95)) drop-shadow(0 0 22px rgba(255, 170, 0, 0.6));
+    }
+
+    /* 信号总线线缆基础与脉冲流动流线 */
+    .signal-cable {
+      stroke: #1e293b;
+      stroke-width: 2.2;
+      fill: none;
+      transition: stroke 0.2s ease, stroke-width 0.2s ease;
+    }
+    .signal-cable.energized {
+      stroke-width: 3.5;
+      stroke-dasharray: 8 6;
+      animation: electronFlow 0.75s linear infinite;
+    }
+    @keyframes electronFlow {
+      from { stroke-dashoffset: 28; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* 梯形图脉冲高亮与瞬态电流动画 */
+    .ladder-flow-pulse {
+      stroke: #10b981 !important;
+      filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.9));
+    }
+    .ladder-block-pulse {
+      fill: rgba(16, 185, 129, 0.25) !important;
+      stroke: #10b981 !important;
+      filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
+    }
+
+    /* 输入按键呼吸与点击反馈 */
+    .key-pad-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* 自定义紧凑滚动条 */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090e18;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-white">
+
+  <!-- 顶部系统控制栏 -->
+  <header class="bg-slate-900/90 border-b border-slate-800/80 px-4 lg:px-6 py-3.5 sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 p-0.5 shadow-lg shadow-cyan-500/25">
+          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+            <span id="nav-display-preview" class="font-digital font-bold text-xl text-cyan-400">8</span>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-bold text-white tracking-wide">一位数字段码屏 PLC 输入与输出系统</h1>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono-code flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> 实时交互输入模式
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">输入任意数字 $\rightarrow$ PLC 扫描采样 $\rightarrow$ SEGD 译码 $\rightarrow$ 信号总线流动 $\rightarrow$ 段码屏同步输出</p>
+        </div>
+      </div>
+
+      <!-- 快速控制与模式切换 -->
+      <div class="flex items-center flex-wrap gap-2 text-xs">
+        <!-- 动画演示速度切换 -->
+        <div class="flex items-center bg-slate-950 rounded-lg p-1 border border-slate-800">
+          <span class="text-slate-400 px-2 text-[11px]">动画模式:</span>
+          <button id="btn-speed-realtime" class="px-2.5 py-1 rounded text-slate-300 hover:text-white text-[11px] transition">实时响应 (极速)</button>
+          <button id="btn-speed-slowmo" class="px-2.5 py-1 rounded bg-cyan-600 text-white text-[11px] font-medium transition flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-200 animate-pulse"></span> 慢动作过程剖析
+          </button>
+        </div>
+
+        <!-- 极性切换 -->
+        <div class="flex items-center bg-slate-950 rounded-lg p-1 border border-slate-800">
+          <span class="text-slate-400 px-2 text-[11px]">屏极性:</span>
+          <button id="btn-pol-cc" class="px-2 py-1 rounded bg-slate-800 text-white text-[11px] font-medium border border-slate-700">共阴(高电平亮)</button>
+          <button id="btn-pol-ca" class="px-2 py-1 rounded text-slate-400 hover:text-slate-200 text-[11px]">共阳(低电平亮)</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-3 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 w-full">
+
+    <!-- 左侧区域：PLC 输入面板与信号总线流向动画 (7 Cols) -->
+    <div class="lg:col-span-7 flex flex-col gap-5">
+      
+      <!-- 用户数字输入控制工作台 (数字输入 / 键盘映射 / BCD拨码) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 lg:p-5 shadow-xl">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3.5">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span class="text-xs font-semibold text-slate-200 tracking-wider">用户输入操作终端 (HMI / 数字键盘 / 键盘直接键入)</span>
+          </div>
+          <span class="text-[11px] text-slate-400 font-mono-code">支持键盘直接按 0~9 键输入</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+          
+          <!-- 直接输入框与触发按钮 (4 Cols) -->
+          <div class="sm:col-span-5 bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 flex flex-col gap-2.5">
+            <label class="text-[11px] text-slate-400 flex items-center justify-between">
+              <span>输入任意一位数字 (0~9):</span>
+              <span id="input-status-indicator" class="text-cyan-400 font-mono-code font-bold">就绪</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input id="user-digit-input" type="number" min="0" max="9" value="8" 
+                class="w-full bg-slate-900 border-2 border-slate-700 focus:border-cyan-500 rounded-lg px-3 py-2 text-2xl font-mono-code text-center font-bold text-cyan-300
